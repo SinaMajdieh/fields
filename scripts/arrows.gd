@@ -115,5 +115,5 @@ func calculate_scale(distance: float) -> float:
 	return lerp(max_size, min_size, normalized_distance)
 
 func calculate_color(distance: float) -> Color:
-	var normalized_distance: float = clamp(distance / max_distance, 0.0, 1.0)
-	return Color(1.0 - normalized_distance, normalized_distance, normalized_distance, 1.0)
+	var normalized_distance: float = 1 - clamp(distance / max_distance, 0.0, 1.0)
+	return ColorMan.get_heat_color(normalized_distance)
