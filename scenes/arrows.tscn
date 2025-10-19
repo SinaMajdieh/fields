@@ -8,18 +8,17 @@ script = ExtResource("1_skkvd")
 charge = NodePath("Charge")
 multi_mesh_instance = NodePath("MultiMeshInstance2D")
 grid_size = Vector2(-1, -1)
-spacing = 30.0
+spacing = 60.0
 max_size = 1.7
 max_field = 5.0
 arrow_length = 10.0
 arrow_width = 5.0
 head_length = 4.0
 head_width = 7.5
-update_radius = 500.0
 
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
 
 [node name="Charge" type="Node2D" parent="."]
 script = ExtResource("2_skkvd")
 charge_position = Vector2(200, 200)
-type = 1
+velocity = Vector2(400, 300)

@@ -7,12 +7,16 @@ enum Type {
 }
 
 const K: float = 8.9875517923e9  # Coulomb constant
+const MU_0: float = 4 * PI * 1e-7  # Magnetic constant
 
 @export var charge_position: Vector2 = Vector2.ZERO
 @export var type: Type = Type.ELECTRON
+@export var velocity: Vector2 = Vector2.ZERO
+@export var mass: float = 1.0  # Optional, for force-based motion
+
 # Scales the computed electric field strength for visualization purposes.
-# Real-world values are extremely small (~10^-19 C), so this multiplier brings them
-@export var strength_multiplier: float = 10e-7 
+# Real-world values are extremely small (~10^-19 C), so this multiplier brings them into a usable range.
+@export var strength_multiplier: float = 10e-6
 
 func get_electric_field_at(pos: Vector2) -> Vector2:
     var r: Vector2 = pos - charge_position
@@ -25,6 +29,21 @@ func get_electric_field_at(pos: Vector2) -> Vector2:
     var q: float = _get_scaled_charge()
     return (K * q / r_length_sq) * r.normalized() * strength_multiplier
 
+func _process(delta: float) -> void:
+    update_position(delta)
+
+func update_position(delta: float) -> void:
+    charge_position += velocity * delta
+    keep_in_bounds()    # for testing purposes
+
+## Not scientifically accurate
+## For testing purposes
+func keep_in_bounds() -> void:
+    var bounds: Vector2 = get_viewport_rect().size
+    if charge_position.x < 0 or charge_position.x > bounds.x:
+        velocity.x *= -1
+    if charge_position.y < 0 or charge_position.y > bounds.y:
+        velocity.y *= -1
 
 # === Helpers ===
 
