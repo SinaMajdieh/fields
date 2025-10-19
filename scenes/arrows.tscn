@@ -1,16 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://dyjgs8wgxal1t"]
+[gd_scene load_steps=3 format=3 uid="uid://dyjgs8wgxal1t"]
 
 [ext_resource type="Script" uid="uid://jb7a6wpbvyh3" path="res://scripts/arrows.gd" id="1_skkvd"]
+[ext_resource type="Script" uid="uid://d02op33sx53mb" path="res://scripts/charge.gd" id="2_skkvd"]
 
-[node name="Arrows" type="Node2D" node_paths=PackedStringArray("multi_mesh_instance")]
+[node name="Arrows" type="Node2D" node_paths=PackedStringArray("charge", "multi_mesh_instance")]
 script = ExtResource("1_skkvd")
+charge = NodePath("Charge")
 multi_mesh_instance = NodePath("MultiMeshInstance2D")
 grid_size = Vector2(-1, -1)
 spacing = 30.0
-base_size = null
 max_size = 1.7
-min_size = null
-max_distance = null
+max_field = 5.0
 arrow_length = 10.0
 arrow_width = 5.0
 head_length = 4.0
@@ -18,3 +18,8 @@ head_width = 7.5
 update_radius = 500.0
 
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
+
+[node name="Charge" type="Node2D" parent="."]
+script = ExtResource("2_skkvd")
+charge_position = Vector2(200, 200)
+type = 1

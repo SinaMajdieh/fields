@@ -1,5 +1,6 @@
 extends Node2D
 
+@export var charge: Charge
 @export var multi_mesh_instance: MultiMeshInstance2D
 
 ## Arrow Grid settings
@@ -12,7 +13,7 @@ extends Node2D
 @export var base_size: float = 1.0
 @export var max_size: float = 3.0
 @export var min_size: float = 0.3
-@export var max_distance: float = 500.0
+@export var max_field: float = 500.0
 
 ## Arrow design
 @export_category("Arrow Design") 
@@ -21,15 +22,7 @@ extends Node2D
 @export var head_length: float = 8.0
 @export var head_width: float = 15.0
 
-@export var update_radius: float = 800.0:
-	set(value):
-		update_radius = value
-		update_radius_sq = update_radius * update_radius
-
 var arrow_positions: PackedVector2Array = PackedVector2Array()
-
-var update_radius_sq: float = 800.0 * 800.0
-var last_mouse_pos: Vector2 = Vector2.ZERO
 
 
 func _ready() -> void:
@@ -48,7 +41,7 @@ func setup_multi_mesh() -> void:
 	multi_mesh.mesh = mesh
 
 	multi_mesh_instance.multimesh = multi_mesh
-	update_arrows(get_global_mouse_position(), false)
+	update_field_arrows()
 
 func initialize_arrow_positions() -> void:
 	arrow_positions = PackedVector2Array()
@@ -65,23 +58,17 @@ func initialize_arrow_positions() -> void:
 			arrow_positions[index] = arrow_pos
 			index += 1
 
-
-func update_arrows(mouse_pos: Vector2, optimized: bool = true) -> void:
+func update_field_arrows() -> void:
 	var multi_mesh: MultiMesh = multi_mesh_instance.multimesh
 	var index: int = 0
 
 	for y: int in range(grid_size.y):
 		for x: int in range(grid_size.x):
+			var field: Vector2 = charge.get_electric_field_at(arrow_positions[index])
 
-			var direction: Vector2 = mouse_pos - arrow_positions[index]
-
-			if direction.length_squared() >= update_radius_sq and optimized:
-				index += 1
-				continue
-
-			var distance: float = direction.length()
-			var angle: float = direction.angle() + PI * 0.5
-			var scale_factor: float = calculate_scale(distance)
+			var field_strength: float = field.length()
+			var angle: float = field.angle() + PI * 0.5
+			var scale_factor: float = calculate_scale(field_strength)
 
 			var arrow_transform: Transform2D = Transform2D()
 			arrow_transform = arrow_transform.rotated(angle)
@@ -89,31 +76,19 @@ func update_arrows(mouse_pos: Vector2, optimized: bool = true) -> void:
 			arrow_transform.origin = arrow_positions[index]
 
 			multi_mesh.set_instance_transform_2d(index, arrow_transform)
-			multi_mesh.set_instance_color(index, calculate_color(distance))
+			multi_mesh.set_instance_color(index, calculate_color(field_strength))
 
 			index += 1
 
-
 func _process(_delta: float) -> void:
-	var mouse_pos: Vector2 = get_global_mouse_position()
-
-	# 25 -> mouse movement threshold squared
-	if mouse_pos.distance_squared_to(last_mouse_pos) < 25.0:
-		return
-	
-	last_mouse_pos = mouse_pos
-	update_arrows(mouse_pos)
+	update_field_arrows()
 
 # === Helper ===
 
-func set_update_radius(new_update_radius: float) -> void:
-	update_radius = new_update_radius
-	update_radius_sq = update_radius * update_radius
+func calculate_scale(field_strength: float) -> float:
+	var normalized_field_strength: float = 1 - clamp(field_strength / max_field, 0.0, 1.0)
+	return lerp(max_size, min_size, normalized_field_strength)
 
-func calculate_scale(distance: float) -> float:
-	var normalized_distance: float = clamp(distance / max_distance, 0.0, 1.0)
-	return lerp(max_size, min_size, normalized_distance)
-
-func calculate_color(distance: float) -> Color:
-	var normalized_distance: float = 1 - clamp(distance / max_distance, 0.0, 1.0)
+func calculate_color(field_strength: float) -> Color:
+	var normalized_distance: float = clamp(field_strength / max_field, 0.0, 1.0)
 	return ColorMan.get_heat_color(normalized_distance)
