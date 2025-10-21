@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var charge: Charge
+@export var charges: Charges
 @export var multi_mesh_instance: MultiMeshInstance2D
 
 ## Arrow Grid settings
@@ -64,7 +64,7 @@ func update_field_arrows() -> void:
 
 	for y: int in range(grid_size.y):
 		for x: int in range(grid_size.x):
-			var field: Vector2 = charge.get_electric_field_at(arrow_positions[index])
+			var field: Vector2 = charges.get_total_electric_field_at(arrow_positions[index])
 
 			var field_strength: float = field.length()
 			var angle: float = field.angle() + PI * 0.5

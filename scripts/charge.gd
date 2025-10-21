@@ -18,6 +18,17 @@ const MU_0: float = 4 * PI * 1e-7  # Magnetic constant
 # Real-world values are extremely small (~10^-19 C), so this multiplier brings them into a usable range.
 @export var strength_multiplier: float = 10e-6
 
+static func create(
+    type_: Type = Type.ELECTRON, 
+    pos: Vector2 = Vector2.ZERO, 
+    velocity_: Vector2 = Vector2.ZERO
+) -> Charge:
+    var charge: Charge = Charge.new()
+    charge.type = type_
+    charge.charge_position = pos
+    charge.velocity = velocity_
+    return charge
+
 func get_electric_field_at(pos: Vector2) -> Vector2:
     var r: Vector2 = pos - charge_position
     var r_length_sq: float = r.length_squared()
@@ -41,9 +52,9 @@ func update_position(delta: float) -> void:
 func keep_in_bounds() -> void:
     var bounds: Vector2 = get_viewport_rect().size
     if charge_position.x < 0 or charge_position.x > bounds.x:
-        velocity.x *= -1
+        charge_position.x = clamp(charge_position.x, 0.0, bounds.x)
     if charge_position.y < 0 or charge_position.y > bounds.y:
-        velocity.y *= -1
+        charge_position.y = clamp(charge_position.y, 0.0, bounds.y)
 
 # === Helpers ===
 

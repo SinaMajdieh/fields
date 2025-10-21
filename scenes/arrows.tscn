@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://dyjgs8wgxal1t"]
 
-[ext_resource type="Script" uid="uid://jb7a6wpbvyh3" path="res://scripts/arrows.gd" id="1_skkvd"]
-[ext_resource type="Script" uid="uid://d02op33sx53mb" path="res://scripts/charge.gd" id="2_skkvd"]
+[ext_resource type="Script" uid="uid://b1233htjbftoi" path="res://scripts/arrows.gd" id="1_skkvd"]
+[ext_resource type="Script" uid="uid://cvivbo2b5qtj3" path="res://scripts/charges.gd" id="2_gchtb"]
 
-[node name="Arrows" type="Node2D" node_paths=PackedStringArray("charge", "multi_mesh_instance")]
+[node name="Arrows" type="Node2D" node_paths=PackedStringArray("charges", "multi_mesh_instance")]
 script = ExtResource("1_skkvd")
-charge = NodePath("Charge")
+charges = NodePath("Charges")
 multi_mesh_instance = NodePath("MultiMeshInstance2D")
 grid_size = Vector2(-1, -1)
 spacing = 60.0
@@ -18,7 +18,6 @@ head_width = 7.5
 
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
 
-[node name="Charge" type="Node2D" parent="."]
-script = ExtResource("2_skkvd")
-charge_position = Vector2(200, 200)
-velocity = Vector2(400, 300)
+[node name="Charges" type="Node2D" parent="."]
+script = ExtResource("2_gchtb")
+charges_numbers = 40
